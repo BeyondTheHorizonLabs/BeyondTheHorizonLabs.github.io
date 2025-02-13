@@ -1,0 +1,133 @@
+name: Deploy and Release to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # Changed to write to allow creating releases
+  pages: write
+  id-token: write
+
+# Control concurrent deployments
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.tagger.outputs.new_tag }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git tag -l "v*" | sort -V | tail -n 1)
+          if [ -z "$latest_tag" ]; then
+            echo "No existing tag found, starting at v1.0.0"
+            echo "latest_tag=v1.0.0" >> $GITHUB_ENV
+          else
+            echo "Latest tag: $latest_tag"
+            echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+          fi
+
+      - name: Bump version and push tag
+        id: tagger
+        uses: anothrNick/github-tag-action@1.67.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: patch
+          INITIAL_VERSION: 1.0.0
+
+      - name: Generate detailed changelog
+        id: changelog
+        run: |
+          echo "Generating detailed changelog..."
+          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+          echo "## 📝 Detailed Commit History" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          
+          # Get the last tag or use HEAD^ if no tags exist
+          last_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo HEAD^)
+          
+          # Generate detailed commit log
+          git log $last_tag..HEAD --pretty=format:"### %ad - %s%n%n**Author:** %an%n**Commit:** %H%n%n%b%n" --date=format:"%Y-%m-%d %H:%M:%S" >> $GITHUB_OUTPUT
+          
+          # Add statistics
+          echo -e "\n## 📊 Changes Statistics\n" >> $GITHUB_OUTPUT
+          echo "$(git diff --shortstat $last_tag..HEAD)" >> $GITHUB_OUTPUT
+          
+          # Add list of changed files
+          echo -e "\n## 📁 Changed Files\n" >> $GITHUB_OUTPUT
+          git diff --name-status $last_tag..HEAD | while read status file; do
+            case $status in
+              A) echo "- ✨ Added: $file";;
+              M) echo "- 📝 Modified: $file";;
+              D) echo "- 🗑️ Deleted: $file";;
+              R) echo "- 📦 Renamed: $file";;
+              C) echo "- 📋 Copied: $file";;
+              *) echo "- Changed: $file";;
+            esac
+          done >> $GITHUB_OUTPUT
+          
+          echo "EOF" >> $GITHUB_OUTPUT
+
+  deploy:
+    needs: version
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  release:
+    needs: [version, deploy]
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.version.outputs.new_tag }}
+          name: Release ${{ needs.version.outputs.new_tag }}
+          body: |
+            # 🚀 BTHL Website Release ${{ needs.version.outputs.new_tag }}
+            
+            ## 🌐 Deployment Status
+            ✅ Successfully deployed to GitHub Pages
+            
+            ${{ needs.version.outputs.changelog }}
+            
+            ---
+            📅 Release Date: $(date +'%Y-%m-%d %H:%M:%S')
+            🤖 Generated automatically by GitHub Actions
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
