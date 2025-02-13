@@ -5,6 +5,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beyond The Horizon Labs - Pioneering Quantum Healing & AI-Driven Medicine</title>
     <style>
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            position: relative;
+            background: var(--bg-darker);
+            margin: 50px auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 10px;
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 0 20px rgba(109, 176, 255, 0.2);
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--primary-color);
+            background: none;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(109, 176, 255, 0.1);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--primary-color);
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+
+        .modal-section {
+            margin-bottom: 30px;
+        }
+
+        .modal.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         :root {
             --primary-color: #6db0ff;
             --bg-dark: #0a0f29;
@@ -136,9 +204,10 @@
         <section id="research" class="section">
             <h2>Our Research</h2>
             <div class="grid">
-                <div class="card">
+                <div class="card" onclick="openModal('researchModal')" style="cursor: pointer;">
                     <h3>Quantum Regenerative Healthcare (QRH)™</h3>
                     <p>AI-driven, energy-based healing technologies designed to enhance human longevity, cognitive function, and physical recovery.</p>
+                    <small style="color: var(--primary-color);">Click to learn more →</small>
                 </div>
                 <div class="card">
                     <h3>Space Medicine</h3>
@@ -154,9 +223,10 @@
         <section id="technologies" class="section">
             <h2>Our Technologies</h2>
             <div class="grid">
-                <div class="card">
+                <div class="card" onclick="openModal('technologiesModal')" style="cursor: pointer;">
                     <h3>QRADOS</h3>
                     <p>Quantum Resonant Anomaly Detection Operating System for advanced field research and analysis.</p>
+                    <small style="color: var(--primary-color);">Click to learn more →</small>
                 </div>
                 <div class="card">
                     <h3>NeuroWaveGen</h3>
@@ -182,6 +252,131 @@
         </section>
     </div>
 </main>
+
+<!-- Research Modal -->
+<div id="researchModal" class="modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeModal('researchModal')">&times;</button>
+        <div class="modal-header">
+            <h2>Our Research in Detail</h2>
+        </div>
+        <div class="modal-body">
+            <div class="modal-section">
+                <h3>Quantum Regenerative Healthcare (QRH)™</h3>
+                <p>Our flagship research division focuses on revolutionary healing technologies that combine quantum physics with AI-driven healthcare solutions:</p>
+                <ul>
+                    <li>AI-driven bioelectric healing systems for cellular regeneration</li>
+                    <li>Non-invasive neurological treatments for PTSD, ADHD, and TBI</li>
+                    <li>Frequency-based therapy using sound and electromagnetic fields</li>
+                    <li>Crystal resonance and tensor field healing technologies</li>
+                    <li>Water immersion healing with programmed frequency patterns</li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3>Space Medicine & Human Optimization</h3>
+                <p>Preparing humanity for long-term space travel through advanced medical research:</p>
+                <ul>
+                    <li>Microgravity adaptation and muscle preservation techniques</li>
+                    <li>Radiation protection strategies for astronaut DNA</li>
+                    <li>Cognitive enhancement for extended space missions</li>
+                    <li>AI-powered autonomous medical systems for space colonies</li>
+                    <li>Regenerative healing protocols for isolated environments</li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3>Consciousness & Energy Field Research</h3>
+                <p>Exploring the frontiers of human consciousness and its interaction with quantum fields:</p>
+                <ul>
+                    <li>UAP phenomena research and energy field analysis</li>
+                    <li>Consciousness expansion through quantum resonance</li>
+                    <li>Inter-dimensional physics and field theory</li>
+                    <li>Non-local consciousness studies</li>
+                    <li>Advanced sensor development for paranormal research</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Technologies Modal -->
+<div id="technologiesModal" class="modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeModal('technologiesModal')">&times;</button>
+        <div class="modal-header">
+            <h2>Our Technologies in Detail</h2>
+        </div>
+        <div class="modal-body">
+            <div class="modal-section">
+                <h3>QRADOS (Quantum Resonant Anomaly Detection Operating System)</h3>
+                <p>A state-of-the-art detection and analysis system featuring:</p>
+                <ul>
+                    <li>Multi-sensor integration for EMF, RF, and gravitational anomalies</li>
+                    <li>AI-powered real-time data correlation</li>
+                    <li>Crystal-based resonance enhancement modules</li>
+                    <li>Advanced triangulation for precise anomaly location</li>
+                    <li>Cloud-based data analysis and pattern recognition</li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3>NeuroWaveGen</h3>
+                <p>Cutting-edge neurological treatment system incorporating:</p>
+                <ul>
+                    <li>AI-optimized frequency generation for neural healing</li>
+                    <li>Real-time brainwave monitoring and adjustment</li>
+                    <li>Multi-channel sound therapy delivery</li>
+                    <li>Customizable treatment protocols</li>
+                    <li>Integration with medical imaging systems</li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3>Quantum Healing Chambers</h3>
+                <p>Revolutionary healing environment combining multiple technologies:</p>
+                <ul>
+                    <li>Electromagnetic field therapy systems</li>
+                    <li>Crystal resonance arrays for energy amplification</li>
+                    <li>Water immersion healing with programmed frequencies</li>
+                    <li>AI-driven biofeedback optimization</li>
+                    <li>Multi-spectrum light therapy integration</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Modal functionality
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+            document.body.style.overflow = 'auto';
+        }
+    });
+</script>
 
 <footer>
     <div class="container">
